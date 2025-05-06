@@ -10,14 +10,14 @@
   "siteURL" : "https://eyolo-nextjs.vercel.app",
   "logo" : "/images/logo.svg",
   "logoWhite" : "/images/logo-white.svg",
-  "logoText" : "Eyolo",
+  "logoText" : "Manzoorify",
   "favicon" : "/images/favicon.png",
 
   "subscriptionFormspreeID" : "xnqeeyyp",
 
   "footerWidgets": {
-    "email" : "hello@authormail.com",
-    "phone" : "+1 (555) 123-4567"
+    "email" : "Manzoorify.com",
+    "phone" : "+93 70 018 6404"
   },
 
   "footerLinks": [
@@ -43,5 +43,5 @@
     }
   ],
 
-  "copyright" : "© 2024 Eyolo, Inc. All rights reserved."
+  "copyright" : "© 2025 Eyolo, Inc. All rights reserved."
 }

@@ -16,6 +16,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import LikeButton from "../components/blog/LikeButton";
 import CommentSection from "../components/blog/CommentSection";
+import Views from "../components/blog/Views";
 
 export async function generateMetadata({ params }) {
   const slug = params.slug;
@@ -71,6 +72,11 @@ const BlogDetails = async ({ params }) => {
                 <span className="font-extralight opacity-40">—</span>
 
                 <p>{formatDate(date)}</p>
+                <div className=" flex justify-between">
+                
+                  <Views />
+                  <LikeButton />
+                </div>
               </div>
 
               <h1 className="text-3xl md:text-4xl !leading-relaxed mb-6 text-balance">
@@ -97,6 +103,7 @@ const BlogDetails = async ({ params }) => {
                 <li>{readingTime}</li>
               </ul>
             </div>
+
             <div className="lg:col-8">
               <div className="relative w-full h-[380px] lg:h-[460px]">
                 <Image
@@ -130,6 +137,8 @@ const BlogDetails = async ({ params }) => {
         </div>
       </div>
 
+
+
       <div className="container hidden lg:block">
         <div className="row">
           <div className="col-12 mt-2">
@@ -155,7 +164,7 @@ const BlogDetails = async ({ params }) => {
                 <SharePost title={title} slug={slug} />
               </div>
               <div className="mt-8 space-y-8">
-                <LikeButton />
+
                 <CommentSection />
               </div>
               <div className="border border-[#DBD8BD] mt-10 lg:mt-20 rounded-lg">

@@ -13,6 +13,7 @@ export default function LikeButton() {
   };
 
   return (
+  
     <button
       onClick={toggleLike}
       className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm transition ${
@@ -22,5 +23,6 @@ export default function LikeButton() {
       <FaHeart className={liked ? "text-red-500" : "text-gray-400"} />
       {count} Like{count !== 1 ? "s" : ""}
     </button>
+    
   );
 }

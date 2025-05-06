@@ -2,17 +2,7 @@
   "slug": "_index-2",
   "frontmatter": {
     "banner": {
-      "heading": "Your Daily Dose of Inspiration and Knowledge",
-      "rssButton": {
-        "enable": true,
-        "link": "/rss.xml",
-        "label": "RSS"
-      },
-      "videoPostsButton": {
-        "enable": true,
-        "link": "/videos",
-        "label": "Video Posts"
-      }
+      "heading": "Manzoorify is one of the best online services"
     },
     "popularTopics": {
       "enable": true,

@@ -19,10 +19,7 @@
   {
     "name": "Pages",
     "submenu": [
-      {
-        "name": "Elements",
-        "link": "/blog/elements"
-      },
+      
       {
         "name": "All Authors",
         "link": "/author"

@@ -14,6 +14,8 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import LikeButton from "../components/blog/LikeButton";
+import CommentSection from "../components/blog/CommentSection";
 
 export async function generateMetadata({ params }) {
   const slug = params.slug;
@@ -120,7 +122,7 @@ const BlogDetails = async ({ params }) => {
                   </svg>
 
                   {/* prettier-ignore */}
-                  <svg className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primary" width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1C9 0.447715 8.55228 -2.41412e-08 8 0C7.44772 2.41412e-08 7 0.447715 7 1L9 1ZM7.29289 17.7071C7.68342 18.0976 8.31658 18.0976 8.70711 17.7071L15.0711 11.3431C15.4616 10.9526 15.4616 10.3195 15.0711 9.92893C14.6805 9.53841 14.0474 9.53841 13.6569 9.92893L8 15.5858L2.34315 9.92893C1.95262 9.53841 1.31946 9.53841 0.928933 9.92893C0.538408 10.3195 0.538408 10.9526 0.928933 11.3431L7.29289 17.7071ZM7 1L7 17L9 17L9 1L7 1Z" fill="currentColor"/></svg>
+                  <svg className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primary" width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1C9 0.447715 8.55228 -2.41412e-08 8 0C7.44772 2.41412e-08 7 0.447715 7 1L9 1ZM7.29289 17.7071C7.68342 18.0976 8.31658 18.0976 8.70711 17.7071L15.0711 11.3431C15.4616 10.9526 15.4616 10.3195 15.0711 9.92893C14.6805 9.53841 14.0474 9.53841 13.6569 9.92893L8 15.5858L2.34315 9.92893C1.95262 9.53841 1.31946 9.53841 0.928933 9.92893C0.538408 10.3195 0.538408 10.9526 0.928933 11.3431L7.29289 17.7071ZM7 1L7 17L9 17L9 1L7 1Z" fill="currentColor" /></svg>
                 </div>
               </div>
             </div>
@@ -152,7 +154,10 @@ const BlogDetails = async ({ params }) => {
               <div className="block lg:hidden mt-14 [&_p]:!text-start [&_ul]:!justify-start [&_hr]:!ml-0">
                 <SharePost title={title} slug={slug} />
               </div>
-
+              <div className="mt-8 space-y-8">
+                <LikeButton />
+                <CommentSection />
+              </div>
               <div className="border border-[#DBD8BD] mt-10 lg:mt-20 rounded-lg">
                 <Link
                   href={`/author/${slugify(author)}`}
@@ -177,11 +182,12 @@ const BlogDetails = async ({ params }) => {
                     <p className="inline-flex items-center gap-3 mt-4 group-hover:text-primary transition-all duration-200 underline decoration-[#b4b6b9] group-hover:decoration-primary">
                       Read Posts of - {author}
                       {/* prettier-ignore */}
-                      <svg className="relative top-[2px]" width="10" height="10" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.33008 17.4023L17.3301 1.40234M17.3301 1.40234H2.93008M17.3301 1.40234V15.8023" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      <svg className="relative top-[2px]" width="10" height="10" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.33008 17.4023L17.3301 1.40234M17.3301 1.40234H2.93008M17.3301 1.40234V15.8023" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
                     </p>
                   </div>
                 </Link>
               </div>
+
             </div>
 
             <div className="lg:col-4 xl:col-3 hidden lg:block">
@@ -192,6 +198,7 @@ const BlogDetails = async ({ params }) => {
             </div>
           </div>
         </div>
+
       </div>
 
       <section className="pb-16 sm:pb-24">
@@ -210,8 +217,10 @@ const BlogDetails = async ({ params }) => {
             ))}
           </div>
         </div>
+
       </section>
     </Layout>
+
   );
 };
 

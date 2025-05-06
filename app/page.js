@@ -18,7 +18,7 @@ const Home = async () => {
     homepageData.frontmatter || {};
 
   // All Categories with image
-  const categories = popularCategories(allPosts).slice(0, 7) || [];
+  const categories = popularCategories(allPosts).slice(0, 8) || [];
 
   // Latest posts
   const latestPosts = allPosts.slice(0, 6) || [];
@@ -54,58 +54,53 @@ const Home = async () => {
     <Layout>
       <Banner trendingPosts={trendingPosts} banner={banner} />
 
-      {/* Popular Topics */}
-      {popularTopics?.enable && (
-        <section className="py-16 sm:py-24">
-          <SectionHeader
-            title={popularTopics.title}
-            buttonLabel={popularTopics.button.label}
-            buttonLink={popularTopics.button.link}
-            dark={false}
-          />
+        {/* Popular Topics */}
+{popularTopics?.enable && (
+  <section className="py-16 sm:py-24">
+    <SectionHeader
+      title={popularTopics.title}
+      buttonLabel={popularTopics.button.label}
+      buttonLink={popularTopics.button.link}
+      dark={false}
+    />
+<div className="container mt-12">
+  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    {categories.map((category, key) => (
+      <div key={key} className="relative group flex flex-col items-center">
+        
+        {/* Compact Button Box */}
+        <Link
+          href={`/category/${slugify(category.name)}`}
+          className="relative z-10 w-full text-center px-4 py-4 border border-[#9A977A] rounded-lg bg-white transition-all duration-300 hover:bg-[#9A977A] hover:text-white shadow-sm"
+        >
+          <span className="inline-flex items-center justify-center text-base md:text-lg font-medium text-[#2B3D2F] group-hover:text-white transition-colors">
+            {category.name}
+            <svg className="ml-2 h-4 w-4 group-hover:text-white transition-colors" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 26.0001L26 2.00012M26 2.00012H4.4M26 2.00012V23.6001" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </span>
+        </Link>
 
-          <div className="container mt-12">
-            <ul className="text-center [&>li]:text-3xl md:[&>li]:text-[2.75rem] [&>li]:my-6 md:[&>li]:my-10 font-primary text-[#9A977A]">
-              {categories.map((category, key) => (
-                <li key={key} className="relative last:mb-0">
-                  <Link
-                    href={`/category/${slugify(category.name)}`}
-                    className="inline-block group transition-all duration-300"
-                  >
-                    <span className="transition-all duration-100 relative z-30 group-hover:text-secondary group-hover:drop-shadow-lg capitalize flex items-center gap-x-4">
-                      {category.name}
-                      {/* prettier-ignore */}
-                      <svg className="h-4 md:h-7 w-4 md:w-7" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 26.0001L26 2.00012M26 2.00012H4.4M26 2.00012V23.6001" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    </span>
-                    <span
-                      className={`absolute max-w-32 lg:max-w-52 top-1/2 opacity-0 invisible scale-90 transition-all duration-300 group-hover:opacity-100 group-hover:visible group-hover:scale-100 overflow-hidden rounded-lg z-20 pointer-events-none ${
-                        key % 2 == 0 ? "left-[10%]" : "right-[10%]"
-                      } ${
-                        key == 0 || key == 1
-                          ? "translate-y-0"
-                          : "-translate-y-1/2"
-                      } ${
-                        key == categories.length || key == categories.length - 1
-                          ? "-translate-y-full"
-                          : "-translate-y-1/2"
-                      }`}
-                    >
-                      <Image
-                        height="130"
-                        width="250"
-                        className="object-cover h-full w-full scale-150 group-hover:scale-100 transition-all duration-300"
-                        src={category.image}
-                        alt={category.name}
-                      />
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      )}
-      {/* Popular Topics */}
+        {/* Hover Image BELOW the box but visually above */}
+        <div
+          className="absolute top-full mt-3 w-[192px] h-[120px] z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out shadow-md rounded overflow-hidden"
+        >
+          <img
+            src={category.image || '/placeholder.jpg'}
+            alt={category.name}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+
+  </section>
+)}
+   
+   
 
       {/* Latest Articles */}
       {latestArticles?.enable && (

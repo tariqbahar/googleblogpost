@@ -18,7 +18,7 @@ const Home = async () => {
     homepageData.frontmatter || {};
 
   // All Categories with image
-  const categories = popularCategories(allPosts).slice(0, 7) || [];
+  const categories = popularCategories(allPosts).slice(0, 6) || [];
 
   // Latest posts
   const latestPosts = allPosts.slice(0, 6) || [];
@@ -54,9 +54,8 @@ const Home = async () => {
     <Layout>
       <Banner trendingPosts={trendingPosts} banner={banner} />
 
-      {/* Popular Topics */}
       {popularTopics?.enable && (
-        <section className="py-16 sm:py-24">
+        <section className="py-20 sm:py-28 bg-white">
           <SectionHeader
             title={popularTopics.title}
             buttonLabel={popularTopics.button.label}
@@ -64,48 +63,55 @@ const Home = async () => {
             dark={false}
           />
 
-          <div className="container mt-12">
-            <ul className="text-center [&>li]:text-3xl md:[&>li]:text-[2.75rem] [&>li]:my-6 md:[&>li]:my-10 font-primary text-[#9A977A]">
+          <div className="container mt-16">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 text-center font-primary">
               {categories.map((category, key) => (
-                <li key={key} className="relative last:mb-0">
+                <li key={key} className="relative group">
                   <Link
                     href={`/category/${slugify(category.name)}`}
-                    className="inline-block group transition-all duration-300"
+                    className="relative block p-6 rounded-2xl border border-[#e0dfc8] bg-white transition-all duration-300 hover:border-secondary hover:shadow-xl hover:-translate-y-1"
                   >
-                    <span className="transition-all duration-100 relative z-30 group-hover:text-secondary group-hover:drop-shadow-lg capitalize flex items-center gap-x-4">
+                    <div className="flex items-center justify-center gap-3 text-2xl md:text-3xl font-semibold text-[#9A977A] group-hover:text-secondary capitalize transition-all duration-300">
                       {category.name}
-                      {/* prettier-ignore */}
-                      <svg className="h-4 md:h-7 w-4 md:w-7" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 26.0001L26 2.00012M26 2.00012H4.4M26 2.00012V23.6001" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    </span>
-                    <span
-                      className={`absolute max-w-32 lg:max-w-52 top-1/2 opacity-0 invisible scale-90 transition-all duration-300 group-hover:opacity-100 group-hover:visible group-hover:scale-100 overflow-hidden rounded-lg z-20 pointer-events-none ${
-                        key % 2 == 0 ? "left-[10%]" : "right-[10%]"
-                      } ${
-                        key == 0 || key == 1
-                          ? "translate-y-0"
-                          : "-translate-y-1/2"
-                      } ${
-                        key == categories.length || key == categories.length - 1
-                          ? "-translate-y-full"
-                          : "-translate-y-1/2"
-                      }`}
-                    >
+                      <svg
+                        className="w-5 h-5 md:w-7 md:h-7 text-current transition-transform duration-300 group-hover:translate-x-1"
+                        viewBox="0 0 28 28"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M2 26.0001L26 2.00012M26 2.00012H4.4M26 2.00012V23.6001"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  </Link>
+
+                  {/* Hover Preview Image */}
+                  <div
+                    className={`absolute z-50 hidden group-hover:block transition-all duration-300 transform scale-90 group-hover:scale-100 opacity-0 group-hover:opacity-100 pointer-events-none ${key % 2 === 0 ? 'left-1/2 -translate-x-1/2' : 'right-1/2 translate-x-1/2'
+                      } top-full mt-4`}
+                  >
+                    <div className="w-64 h-36 overflow-hidden rounded-xl shadow-2xl border border-white backdrop-blur-lg bg-white/30">
                       <Image
-                        height="130"
-                        width="250"
-                        className="object-cover h-full w-full scale-150 group-hover:scale-100 transition-all duration-300"
                         src={category.image}
                         alt={category.name}
+                        width={256}
+                        height={144}
+                        className="object-cover w-full h-full scale-110 group-hover:scale-100 transition-transform duration-500"
                       />
-                    </span>
-                  </Link>
+                    </div>
+                  </div>
                 </li>
               ))}
             </ul>
           </div>
         </section>
       )}
-      {/* Popular Topics */}
+
 
       {/* Latest Articles */}
       {latestArticles?.enable && (
@@ -122,9 +128,8 @@ const Home = async () => {
               {latestPosts.map((post, index) => (
                 <div
                   key={index}
-                  className={`${
-                    latestPostsPattern.includes(index) ? "lg:col-5" : "lg:col-7"
-                  }`}
+                  className={`${latestPostsPattern.includes(index) ? "lg:col-5" : "lg:col-7"
+                    }`}
                 >
                   <PostBlack post={post} color="black" />
                 </div>

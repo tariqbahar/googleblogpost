@@ -106,7 +106,7 @@ const LoginForm = ({
           </button>
         </div>
         <p className="text-center text-gray-600 text-sm mt-6">
-          Don't have an account?{" "}
+          Dont have an account?{" "}
           <button
             onClick={() => setActiveTab("signup")}
             className="text-[#2D5339] font-medium hover:text-[#1F3C28] cursor-pointer whitespace-nowrap"

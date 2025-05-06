@@ -31,7 +31,7 @@ const OtpVerification = ({
         </div>
         <div className="text-center">
           <p className="text-gray-600 text-sm">
-            Didn't receive the code?{" "}
+            Didnt receive the code?{" "}
             {timerActive ? (
               <span className="text-gray-500">Resend in {timer}s</span>
             ) : (

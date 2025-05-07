@@ -1,0 +1,122 @@
+const mongoose = require('mongoose');
+
+const BlogPostSchema = new mongoose.Schema({
+  slug: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  frontmatter: {
+    published: {
+      type: Boolean,
+      default: false
+    },
+    title: {
+      type: String,
+      required: true
+    },
+    description: String,
+    image: String,
+    date: {
+      type: Date,
+      required: true
+    },
+    category: String,
+    author: String,
+    featured: {
+      type: Boolean,
+      default: false
+    },
+    trending: {
+      type: Boolean,
+      default: false
+    },
+    post_of_the_week: {
+      type: Boolean,
+      default: false
+    },
+    authorImage: String,
+    readingTime: String
+  },
+  content: {
+    type: String,
+    required: true
+  }
+}, {
+  timestamps: true // adds createdAt and updatedAt fields
+});
+
+module.exports = mongoose.model('BlogPost', BlogPostSchema);
+
+//////////////////////////////////auther ///////////////////////////////////////////////////
+const mongoose = require('mongoose');
+
+const AuthorSchema = new mongoose.Schema({
+  slug: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  frontmatter: {
+    title: {
+      type: String,
+      required: true
+    },
+    subtitle: {
+      type: String,
+      required: true
+    },
+    image: {
+      type: String,
+      required: true
+    }
+  },
+  content: {
+    type: String,
+    required: true
+  }
+}, {
+  timestamps: true // optional: adds createdAt and updatedAt fields
+});
+
+module.exports = mongoose.model('Author', AuthorSchema);
+
+
+
+///////////////////////comment ////////////////
+import mongoose from "mongoose";
+
+const { Schema, model, Types } = mongoose;
+
+// Recursive Comment Schema
+const CommentSchema = new Schema({
+  name: { type: String, required: true, default: "Anonymous" },
+  message: { type: String, required: true },
+  timestamp: { type: Date, default: Date.now },
+  likes: { type: Number, default: 0 },
+  likedBy: [{ type: String }], // user ids or IPs
+  replies: [this] // recursive nesting
+});
+
+// BlogPost Schema
+const BlogPostSchema = new Schema(
+  {
+    slug: { type: String, required: true, unique: true },
+    title: { type: String, required: true },
+    subtitle: { type: String },
+    image: { type: String },
+    content: { type: String },
+
+    likesCount: { type: Number, default: 0 },
+    likedBy: [{ type: String }], // user ids or IPs
+
+    viewsCount: { type: Number, default: 0 },
+
+    comments: [CommentSchema]
+  },
+  { timestamps: true }
+);
+
+const BlogPost = model("BlogPost", BlogPostSchema);
+
+export default BlogPost;

@@ -11,7 +11,7 @@ const Views = () => {
 
   return (
 
-    <div className="ml-24  mr-8 text-sm text-gray-500   px-4 py-2 rounded-full  t bg-gray-100 ">
+    <div className="md:ml-24  md:mr-8 text-sm text-gray-500   px-4 py-2 rounded-full  t bg-gray-100 ">
        {views} {views === 1 ? 'view' : 'views'}
     </div>
     

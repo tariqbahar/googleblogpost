@@ -1,11 +1,12 @@
 "use client";
+import { signIn } from 'next-auth/react';
 import React, { useState, useEffect } from "react";
 import Head from 'next/head';
-import LoginForm from './components/LoginForm';
-import SignUpForm from './components/SignUpForm';
-import ForgotPassword from './components/ForgotPassword';
+import LoginForm from './components/Login';
+import SignUpForm from './components/Register';
+import ForgotPassword from './components/Forgot-password';
 import OtpVerification from './components/OtpVerification';
-import ResetPassword from './components/ResetPassword';
+import ResetPassword from './components/Reset-password';
 import SuccessDialog from './components/SuccessDialog';
 import RightIllustration from './components/RightIllustration';
 
@@ -23,43 +24,30 @@ const App = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-
+  
   const handleLogin = async () => {
-    try {
-      setIsLoading(true);
-      setErrors({});
-
-      if (!validateEmail(email)) {
-        setErrors({ loginError: "Please enter a valid email address" });
-        return;
-      }
-
-      if (!password.trim()) {
-        setErrors({ loginError: "Please enter your password" });
-        return;
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      const mockResponse = {
-        success: true,
-        user: {
-          email,
-          name: "John Doe",
-        },
-      };
-
-      if (mockResponse.success) {
-        setShowSuccessDialog(true);
-        setEmail("");
-        setPassword("");
-        console.log("Redirecting to dashboard...");
-      }
-    } catch (error) {
-      setErrors({ loginError: "Login failed. Please try again." });
-    } finally {
+    setIsLoading(true);
+    setErrors({});
+  
+    if (!email || !password) {
+      setErrors({ loginError: 'Please enter email and password' });
       setIsLoading(false);
+      return;
     }
+  
+    const result = await signIn('credentials', {
+      redirect: false,
+      email,
+      password,
+    });
+  
+    if (result?.error) {
+      setErrors({ loginError: result.error });
+    } else {
+      window.location.href = '/dashboard';
+    }
+  
+    setIsLoading(false);
   };
 
   const handleGoogleSignIn = async () => {

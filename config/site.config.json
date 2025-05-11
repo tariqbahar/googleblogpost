@@ -7,7 +7,7 @@
     "ogImage" : "/images/ogimage.jpg"
   },
   "baseURL" : "",
-  "siteURL" : "https://eyolo-nextjs.vercel.app",
+  "siteURL" : "https://googleblogpost.vercel.app",
   "logo" : "/images/logo.svg",
   "logoWhite" : "/images/logo-white.svg",
   "logoText" : "Manzoorify",

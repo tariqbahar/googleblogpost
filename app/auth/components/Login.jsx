@@ -26,10 +26,9 @@ const LoginForm = ({ setActiveTab }) => {
     });
 
     if (result?.error) {
-      console.error('❌ Login error:', result.error);
       setErrors({ loginError: result.error });
     } else {
-      window.location.href = '/dashboard'; // or your post-login route
+      window.location.href = '/dashboard';
     }
 
     setIsLoading(false);
@@ -43,11 +42,9 @@ const LoginForm = ({ setActiveTab }) => {
       </div>
 
       <div className="space-y-4">
-        {/* Email */}
         <div className="relative">
           <input
             type="email"
-            id="login-email"
             className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Email Address"
             value={email}
@@ -56,11 +53,9 @@ const LoginForm = ({ setActiveTab }) => {
           <i className="fas fa-envelope absolute right-3 top-3.5 text-gray-400"></i>
         </div>
 
-        {/* Password */}
         <div className="relative">
           <input
             type="password"
-            id="login-password"
             className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Password"
             value={password}
@@ -69,7 +64,6 @@ const LoginForm = ({ setActiveTab }) => {
           <i className="fas fa-lock absolute right-3 top-3.5 text-gray-400"></i>
         </div>
 
-        {/* Remember Me & Forgot */}
         <div className="flex items-center justify-between">
           <label className="flex items-center text-sm text-gray-700">
             <input type="checkbox" className="h-4 w-4 text-blue-600 border-gray-300 rounded" />
@@ -83,7 +77,6 @@ const LoginForm = ({ setActiveTab }) => {
           </button>
         </div>
 
-        {/* Login Button */}
         <button
           onClick={handleLogin}
           disabled={isLoading}
@@ -103,13 +96,11 @@ const LoginForm = ({ setActiveTab }) => {
           <p className="text-red-500 text-sm text-center mt-2">{errors.loginError}</p>
         )}
 
-        {/* Divider */}
         <div className="relative flex items-center justify-center mt-6">
           <div className="absolute border-t border-gray-300 w-full" />
           <div className="relative bg-white px-4 text-sm text-gray-500">Or continue with</div>
         </div>
 
-        {/* Social Login */}
         <div className="grid grid-cols-3 gap-3">
           <button
             onClick={() => {
@@ -141,7 +132,6 @@ const LoginForm = ({ setActiveTab }) => {
           </button>
         </div>
 
-        {/* Sign up switch */}
         <p className="text-center text-gray-600 text-sm mt-6">
           Don’t have an account?{' '}
           <button

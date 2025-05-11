@@ -3,6 +3,10 @@ import { fontLexendDeca, fontPrata } from "@/components/essential/Fonts";
 import config from "@/config/site.config.json";
 import NextTopLoader from "nextjs-toploader";
 
+// Font Awesome CSS import 👇
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
+
 import "@/styles/styles.scss";
 
 export const metadata = {
@@ -16,7 +20,7 @@ export const metadata = {
     icon: "/images/favicon.png",
   },
 
-  metadataBase: new URL("https://eyolo-nextjs.vercel.app"),
+  metadataBase: new URL("https://googleblogpost.vercel.app"),
   alternates: {
     canonical: "/",
   },

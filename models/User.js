@@ -47,10 +47,7 @@ const userSchema = new mongoose.Schema({
     default: 'user'
   },
   lastLogin: Date,
-  // profileComplete: {
-  //   type: Boolean,
-  //   default: false
-  // }
+
 }, {
   timestamps: true // Adds createdAt and updatedAt automatically
 });

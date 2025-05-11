@@ -6,15 +6,17 @@ import FacebookProvider from 'next-auth/providers/facebook';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
-import clientPromise from '@/libs/mongoClient';
-import connectDB from '@/libs/mongodb';
-import User from '@/models/User';
+import clientPromise from '@/libs/mongoClient'; // for NextAuth adapter
+import connectDB from '@/libs/mongodb';         // for mongoose connection
+import User from '@/models/User';               // your mongoose User model
 
 export const authOptions = {
   adapter: MongoDBAdapter(clientPromise),
+
   session: {
     strategy: 'jwt',
   },
+
   secret: process.env.NEXTAUTH_SECRET,
 
   providers: [
@@ -28,34 +30,29 @@ export const authOptions = {
         console.log('🔑 Credentials login attempt');
 
         await connectDB();
-
         const email = credentials.email?.toLowerCase().trim();
         const password = credentials.password;
-
-        console.log('📥 Email:', email);
-        console.log('📥 Password input:', password);
 
         const user = await User.findOne({ email });
 
         if (!user) {
-          console.log('❌ No user found');
+          console.log('❌ No user found for email:', email);
           throw new Error('Invalid email or password');
         }
 
         if (!user.password) {
-          console.log('❌ User has no password (probably OAuth)');
-          throw new Error('Use your social login');
+          console.log('❌ User exists but has no password (maybe social login)');
+          throw new Error('Please log in with your social account');
         }
 
-        console.log('🔒 Password hash from DB:', user.password);
-
         const isValid = await user.comparePassword(password);
-
-        console.log('✅ Password match result:', isValid);
+        console.log('🔐 Password match:', isValid);
 
         if (!isValid) {
           throw new Error('Invalid email or password');
         }
+
+        console.log('✅ Auth success for:', user.email);
 
         return {
           id: user._id.toString(),
@@ -82,7 +79,7 @@ export const authOptions = {
   ],
 
   pages: {
-    signIn: '/auth',
+    signIn: '/auth', // your custom login/register component page
   },
 
   callbacks: {

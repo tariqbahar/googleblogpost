@@ -1,6 +1,6 @@
 import Layout from "@/components/Layout";
 import PostBlack from "@/components/posts/PostBlack";
-import allPosts from "@/data/posts.json";
+// import allPosts from "@/data/posts.json";
 import { popularCategories } from "@/functions/categories";
 import { slugify } from "@/libs/utils/slugify";
 import styles from "@/styles/modules/Style.module.scss";
@@ -9,6 +9,14 @@ import { notFound } from "next/navigation";
 
 export async function generateMetadata({ params }) {
   const slug = params.category;
+  const resPosts = await fetch(
+    `https://dashboard-blog.vercel.app/api/blogPost`,
+    {
+      cache: "no-store",
+    }
+  );
+  const posts = await resPosts.json();
+  const allPosts = posts.blogs;
   const categories = popularCategories(allPosts);
   const currentCategory = categories.find(
     (category) => category.name === slug.split("-").join(" ")
@@ -29,8 +37,16 @@ export async function generateMetadata({ params }) {
   };
 }
 
-const CategorySingle = ({ params }) => {
+const CategorySingle = async ({ params }) => {
   const slug = params.category;
+  const resPosts = await fetch(
+    `https://dashboard-blog.vercel.app/api/blogPost`,
+    {
+      cache: "no-store",
+    }
+  );
+  const post = await resPosts.json();
+  const allPosts = post.blogs;
   const posts = allPosts.filter((post) => post.frontmatter.category === slug);
 
   if (!posts) {

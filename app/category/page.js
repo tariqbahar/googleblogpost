@@ -1,5 +1,5 @@
 import Layout from "@/components/Layout";
-import allPosts from "@/data/posts.json";
+// import allPosts from "@/data/posts.json";
 import { popularCategories } from "@/functions/categories";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +9,15 @@ export const metadata = {
   description: "All of Eyolo's Blog Category",
 };
 
-const AllCategory = () => {
+const AllCategory = async () => {
+  const resPosts = await fetch(
+    `https://dashboard-blog.vercel.app/api/blogPost`,
+    {
+      cache: "no-store",
+    }
+  );
+  const posts = await resPosts.json();
+  const allPosts = posts.blogs;
   const categories = popularCategories(allPosts);
 
   return (

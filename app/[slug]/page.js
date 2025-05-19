@@ -6,7 +6,7 @@ import SharePost from "@/components/blog/SharePost";
 import SectionHeader from "@/components/essential/SectionHeader";
 import PostThree from "@/components/posts/Post-3";
 import allAuthors from "@/data/author.json";
-import allPosts from "@/data/posts.json";
+// import allPosts from "@/data/posts.json";
 import { getSuggestedPosts } from "@/libs/functions/getSuggestedPosts";
 import { formatDate } from "@/libs/utils/formatDate";
 import { slugify } from "@/utils/slugify";
@@ -19,18 +19,19 @@ import CommentSection from "../components/blog/CommentSection";
 import Views from "../components/blog/Views";
 
 export async function generateMetadata({ params }) {
-  const slug = params.slug;
-  const currentPost = allPosts.find((post) => post.slug === slug);
+  const res = await fetch(`https://dashboard-blog.vercel.app/api/blogPost`, {
+    cache: "no-store",
+  });
+  const allPosts = await res.json();
+  const currentPost = allPosts.blogs.find((post) => post.slug === params.slug);
 
-  if (!currentPost) {
-    return notFound();
-  }
+  if (!currentPost) return notFound();
 
-  const { title, desscription, image } = currentPost.frontmatter;
+  const { title, description, image } = currentPost.frontmatter;
 
   return {
-    title: title,
-    description: desscription,
+    title,
+    description,
     openGraph: {
       images: [{ url: image }],
     },
@@ -38,8 +39,19 @@ export async function generateMetadata({ params }) {
 }
 
 const BlogDetails = async ({ params }) => {
+  const resPosts = await fetch(
+    `https://dashboard-blog.vercel.app/api/blogPost`,
+    {
+      cache: "no-store",
+    }
+  );
+
+  const blogs = await resPosts.json();
+  const allPosts = blogs.blogs;
+  // const currentPost = await resPosts.json();
   const slug = params.slug;
   const currentPost = allPosts.find((post) => post.slug === slug);
+  console.log(currentPost);
 
   if (!currentPost) {
     return notFound();
@@ -48,10 +60,10 @@ const BlogDetails = async ({ params }) => {
   const { title, category, image, date, author, authorImage, readingTime } =
     currentPost.frontmatter;
 
-  const content = await currentPost.content;
+  const content = currentPost.content;
 
   const authorSlug = slugify(author);
-  const currentAuthor = allAuthors.find((author) => author.slug === authorSlug);
+  // const currentAuthor = allAuthors.find((author) => author.slug === authorSlug);
 
   // get first 3 suggested posts
   const suggestedPosts = getSuggestedPosts(allPosts, slug, category);
@@ -73,7 +85,6 @@ const BlogDetails = async ({ params }) => {
 
                 <p>{formatDate(date)}</p>
                 <div className=" flex justify-between">
-                
                   <Views />
                   <LikeButton />
                 </div>
@@ -100,7 +111,7 @@ const BlogDetails = async ({ params }) => {
                   </Link>
                 </li>
                 <li>•</li>
-                <li>{readingTime}</li>
+                <li>{readingTime} MIN TO READ</li>
               </ul>
             </div>
 
@@ -137,8 +148,6 @@ const BlogDetails = async ({ params }) => {
         </div>
       </div>
 
-
-
       <div className="container hidden lg:block">
         <div className="row">
           <div className="col-12 mt-2">
@@ -164,10 +173,9 @@ const BlogDetails = async ({ params }) => {
                 <SharePost title={title} slug={slug} />
               </div>
               <div className="mt-8 space-y-8">
-
-                <CommentSection />
+                <CommentSection blog={currentPost} />
               </div>
-              <div className="border border-[#DBD8BD] mt-10 lg:mt-20 rounded-lg">
+              {/* <div className="border border-[#DBD8BD] mt-10 lg:mt-20 rounded-lg">
                 <Link
                   href={`/author/${slugify(author)}`}
                   className="flex flex-col sm:flex-row gap-y-5 gap-x-6 hover:text-dark transition-all duration-300 p-5 group"
@@ -190,13 +198,12 @@ const BlogDetails = async ({ params }) => {
 
                     <p className="inline-flex items-center gap-3 mt-4 group-hover:text-primary transition-all duration-200 underline decoration-[#b4b6b9] group-hover:decoration-primary">
                       Read Posts of - {author}
-                      {/* prettier-ignore */}
+                      
                       <svg className="relative top-[2px]" width="10" height="10" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.33008 17.4023L17.3301 1.40234M17.3301 1.40234H2.93008M17.3301 1.40234V15.8023" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
                     </p>
                   </div>
                 </Link>
-              </div>
-
+              </div> */}
             </div>
 
             <div className="lg:col-4 xl:col-3 hidden lg:block">
@@ -207,7 +214,6 @@ const BlogDetails = async ({ params }) => {
             </div>
           </div>
         </div>
-
       </div>
 
       <section className="pb-16 sm:pb-24">
@@ -226,10 +232,8 @@ const BlogDetails = async ({ params }) => {
             ))}
           </div>
         </div>
-
       </section>
     </Layout>
-
   );
 };
 

@@ -8,12 +8,21 @@ const TableOfContents = () => {
 
   useEffect(() => {
     const content = document.querySelector(".content");
+    if (!content) return;
 
     const headingElements = content.querySelectorAll("h2, h3");
 
     const headingArray = Array.from(headingElements);
 
-    headingArray.forEach((heading) => {
+    headingArray.forEach((heading, index) => {
+      if (!heading.id) {
+        const text = heading.textContent || `heading-${index}`;
+        const id = text
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+        heading.id = id;
+      }
       heading.setAttribute("data-id", heading.id);
     });
 
@@ -32,17 +41,18 @@ const TableOfContents = () => {
     };
 
     window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const handleClick = (e, id) => {
     e.preventDefault();
     const element = document.getElementById(id);
-    element.scrollIntoView({ behavior: "smooth" });
-    setActive(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+      setActive(id);
+    } else {
+      console.warn(`Element with id "${id}" not found.`);
+    }
   };
 
   const [expanded, setExpanded] = useState(false);

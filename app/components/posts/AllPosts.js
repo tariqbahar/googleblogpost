@@ -1,8 +1,6 @@
 "use client";
-
 import Skeleton from "@/app/components/blog/Skeleton";
 import PostTwo from "@/components/posts/Post-2";
-import allPosts from "@/data/posts.json";
 import { capitalizeText } from "@/utils/capitalizeText";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -11,13 +9,13 @@ const AllPosts = ({ postsPerPage }) => {
   const filterParams = useSearchParams();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [allFetchedPosts, setAllFetchedPosts] = useState([]);
   const [posts, setPosts] = useState([]);
   const [totalFilteredPosts, setTotalFilteredPosts] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
 
   const postFilters = ["trending", "popular", "featured"];
 
-  // Set the filter params in URL
   const setURLParams = useCallback(
     (filter, page = 1) => {
       const params = new URLSearchParams(filterParams);
@@ -30,26 +28,24 @@ const AllPosts = ({ postsPerPage }) => {
     [filterParams, router]
   );
 
-  // Set filtered posts with pagination
   const setFilteredPosts = useCallback(
     (filter, page = 1) => {
       let filteredPosts;
+
       if (filter === "trending") {
-        setLoading(true);
-        filteredPosts = allPosts.filter((post) => post.frontmatter.trending);
+        filteredPosts = allFetchedPosts.filter(
+          (post) => post.frontmatter?.trending
+        );
       } else if (filter === "popular") {
-        setLoading(true);
-        filteredPosts = allPosts.filter(
-          (post) => post.frontmatter.trending && post.frontmatter.featured
+        filteredPosts = allFetchedPosts.filter(
+          (post) => post.frontmatter?.trending && post.frontmatter?.featured
         );
       } else if (filter === "featured") {
-        setLoading(true);
-        filteredPosts = allPosts.filter(
-          (post) => post.frontmatter.post_of_the_week
+        filteredPosts = allFetchedPosts.filter(
+          (post) => post.frontmatter?.post_of_the_week
         );
       } else {
-        setLoading(true);
-        filteredPosts = allPosts;
+        filteredPosts = allFetchedPosts;
       }
 
       const start = (page - 1) * postsPerPage;
@@ -59,17 +55,35 @@ const AllPosts = ({ postsPerPage }) => {
       setPosts(paginatedPosts);
       setLoading(false);
     },
-    [postsPerPage]
+    [allFetchedPosts, postsPerPage]
   );
 
-  // Set default filter
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          "https://dashboard-blog.vercel.app/api/blogPost"
+        );
+        const data = await res.json();
+        console.log("Fetched posts:", data);
+        setAllFetchedPosts(data.blogs);
+      } catch (error) {
+        console.error("Failed to fetch posts:", error);
+        setAllFetchedPosts([]);
+      }
+    };
+    fetchPosts();
+  }, []);
+
   useEffect(() => {
     const filter = filterParams.get("filter") || "latest";
     const page = Number(filterParams.get("page") || 1);
-    setFilteredPosts(filter, page);
-  }, [filterParams, setFilteredPosts]);
+    if (allFetchedPosts.length > 0) {
+      setFilteredPosts(filter, page);
+    }
+  }, [filterParams, allFetchedPosts, setFilteredPosts]);
 
-  // Handle filter change
   const handleFilterChange = (e) => {
     const value = e.target.value;
     setLoading(true);
@@ -78,7 +92,6 @@ const AllPosts = ({ postsPerPage }) => {
     setFilteredPosts(value, 1);
   };
 
-  // Handle page change
   const handlePageChange = (newPage) => {
     setLoading(true);
     setCurrentPage(newPage);
@@ -114,7 +127,7 @@ const AllPosts = ({ postsPerPage }) => {
                 <p>Filter:</p>
                 <select
                   className="bg-transparent border border-dark/20 rounded px-3 h-8 appearance-none outline-none w-28 bg-no-repeat bg-[size:13px] bg-[90%_50%] text-sm cursor-pointer"
-                  style={{ backgroundImage: `url(${arrowBg})` }}
+                  // style={{ backgroundImage: `url(${arrowBg})` }}
                   title="Filter Posts"
                   onChange={handleFilterChange}
                   value={filterParams.get("filter") || ""}
@@ -215,6 +228,3 @@ const AllPosts = ({ postsPerPage }) => {
 };
 
 export default AllPosts;
-
-const arrowBg =
-  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxNiAxNic+PHBhdGggZmlsbD0nbm9uZScgc3Ryb2tlPScjMzQzYTQwJyBzdHJva2UtbGluZWNhcD0ncm91bmQnIHN0cm9rZS1saW5lam9pbj0ncm91bmQnIHN0cm9rZS13aWR0aD0nMicgZD0nTTIgNWw2IDYgNi02Jy8+PC9zdmc+";

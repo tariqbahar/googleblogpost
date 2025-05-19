@@ -4,7 +4,7 @@ import Banner from "@/components/home-2/Banner";
 import PostTwo from "@/components/posts/Post-2";
 import PostBlack from "@/components/posts/PostBlack";
 import homepageData from "@/data/pages/_index-2.json";
-import allPosts from "@/data/posts.json";
+// import allPosts from "@/data/posts.json";
 import { popularCategories } from "@/functions/categories";
 import { isPostInArray } from "@/libs/utils/isPostInArray";
 import { slugify } from "@/libs/utils/slugify";
@@ -13,6 +13,14 @@ import Image from "next/image";
 import Link from "next/link";
 
 const Home = async () => {
+  const resPosts = await fetch(
+    `https://dashboard-blog.vercel.app/api/blogPost`,
+    {
+      cache: "no-store",
+    }
+  );
+  const posts = await resPosts.json();
+  const allPosts = posts.blogs;
   // homepage data
   const { banner, popularTopics, latestArticles, popularArticles } =
     homepageData.frontmatter || {};
@@ -54,53 +62,60 @@ const Home = async () => {
     <Layout>
       <Banner trendingPosts={trendingPosts} banner={banner} />
 
-        {/* Popular Topics */}
-{popularTopics?.enable && (
-  <section className="py-16 sm:py-24">
-    <SectionHeader
-      title={popularTopics.title}
-      buttonLabel={popularTopics.button.label}
-      buttonLink={popularTopics.button.link}
-      dark={false}
-    />
-<div className="container mt-12">
-  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-    {categories.map((category, key) => (
-      <div key={key} className="relative group flex flex-col items-center">
-        
-        {/* Compact Button Box */}
-        <Link
-          href={`/category/${slugify(category.name)}`}
-          className="relative z-10 w-full text-center px-4 py-4 border border-[#9A977A] rounded-lg bg-white transition-all duration-300 hover:bg-[#9A977A] hover:text-white shadow-sm"
-        >
-          <span className="inline-flex items-center justify-center text-base md:text-lg font-medium text-[#2B3D2F] group-hover:text-white transition-colors">
-            {category.name}
-            <svg className="ml-2 h-4 w-4 group-hover:text-white transition-colors" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2 26.0001L26 2.00012M26 2.00012H4.4M26 2.00012V23.6001" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </span>
-        </Link>
-
-        {/* Hover Image BELOW the box but visually above */}
-        <div
-          className="absolute top-full mt-3 w-[192px] h-[120px] z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out shadow-md rounded overflow-hidden"
-        >
-          <img
-            src={category.image || '/placeholder.jpg'}
-            alt={category.name}
-            className="w-full h-full object-cover"
+      {/* Popular Topics */}
+      {popularTopics?.enable && (
+        <section className="py-16 sm:py-24">
+          <SectionHeader
+            title={popularTopics.title}
+            buttonLabel={popularTopics.button.label}
+            buttonLink={popularTopics.button.link}
+            dark={false}
           />
-        </div>
-      </div>
-    ))}
-  </div>
-</div>
+          <div className="container mt-12">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {categories.map((category, key) => (
+                <div
+                  key={key}
+                  className="relative group flex flex-col items-center"
+                >
+                  {/* Compact Button Box */}
+                  <Link
+                    href={`/category/${slugify(category.name)}`}
+                    className="relative z-10 w-full text-center px-4 py-4 border border-[#9A977A] rounded-lg bg-white transition-all duration-300 hover:bg-[#9A977A] hover:text-white shadow-sm"
+                  >
+                    <span className="inline-flex items-center justify-center text-base md:text-lg font-medium text-[#2B3D2F] group-hover:text-white transition-colors">
+                      {category.name}
+                      <svg
+                        className="ml-2 h-4 w-4 group-hover:text-white transition-colors"
+                        viewBox="0 0 28 28"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M2 26.0001L26 2.00012M26 2.00012H4.4M26 2.00012V23.6001"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+                  </Link>
 
-
-  </section>
-)}
-   
-   
+                  {/* Hover Image BELOW the box but visually above */}
+                  <div className="absolute top-full mt-3 w-[192px] h-[120px] z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out shadow-md rounded overflow-hidden">
+                    <img
+                      src={category.image || "/placeholder.jpg"}
+                      alt={category.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Latest Articles */}
       {latestArticles?.enable && (

@@ -72,7 +72,7 @@ const PostBlack = ({ post, color, style }) => {
             {author}
           </li>
           <li>•</li>
-          <li>{readingTime}</li>
+          <li>{readingTime} MIN TO READ</li>
         </ul>
 
         <Link

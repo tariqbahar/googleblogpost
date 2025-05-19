@@ -39,7 +39,7 @@ const PostTwo = ({ post }) => {
               {author?.split(" ")[0]}
             </li>
             <li>•</li>
-            <li>{readingTime}</li>
+            <li>{readingTime} MIN TO READ</li>
           </ul>
         </div>
 

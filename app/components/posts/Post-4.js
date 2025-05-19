@@ -65,7 +65,7 @@ const PostFour = ({ post }) => {
             {author?.split(" ")[0]}
           </li>
           <li>•</li>
-          <li>{readingTime}</li>
+          <li>{readingTime} MIN TO READ</li>
         </ul>
 
         <span className="inline-block text-black group-hover:text-black group-hover:rotate-45 transition duration-300">

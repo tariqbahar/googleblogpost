@@ -169,7 +169,7 @@ const Banner = ({ featuredPost }) => {
                     {author}
                   </li>
                   <li>•</li>
-                  <li>{readingTime}</li>
+                  <li>{readingTime} MIN TO READ</li>
                 </ul>
 
                 <span className="h-12 sm:h-14 w-12 sm:w-14 m-auto flex items-center justify-center text-white sm:text-[#90A096] group-hover:text-white group-hover:bg-white/10 bg-white/30 sm:bg-transparent rounded-full transition-all duration-300 p-[17px] sm:p-0 group-hover:rotate-45">

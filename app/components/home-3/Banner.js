@@ -79,7 +79,7 @@ const Banner = ({ banner, featuredPost, topPosts }) => {
                     {author}
                   </li>
                   <li>•</li>
-                  <li>{readingTime}</li>
+                  <li>{readingTime} MIN TO READ</li>
                 </ul>
 
                 <span className="inline-block text-[#90A096] group-hover:text-white group-hover:rotate-45 transition duration-300 bg-white/10 p-4 rounded-full">
@@ -135,7 +135,9 @@ const Banner = ({ banner, featuredPost, topPosts }) => {
                                 {post.frontmatter.author?.split(" ")[0]}
                               </li>
                               <li>•</li>
-                              <li>{post.frontmatter.readingTime}</li>
+                              <li>
+                                {post.frontmatter.readingTime} MIN TO READ
+                              </li>
                             </ul>
                           </div>
                         </div>

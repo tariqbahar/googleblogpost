@@ -7,9 +7,16 @@ export const metadata = {
   description: "All of Eyolo's Blog Posts",
 };
 
-const AllBlog = () => {
+const AllBlog = async () => {
   const postsPerPage = 8;
-
+  const resPosts = await fetch(
+    `https://dashboard-blog.vercel.app/api/blogPost`,
+    {
+      cache: "no-store",
+    }
+  );
+  const data = await resPosts.json();
+  const blogs = data.blogs;
   return (
     <Suspense
       fallback={
@@ -19,7 +26,7 @@ const AllBlog = () => {
       }
     >
       <Layout>
-        <AllPosts postsPerPage={postsPerPage} />
+        <AllPosts blogs={blogs} postsPerPage={postsPerPage} />
       </Layout>
     </Suspense>
   );

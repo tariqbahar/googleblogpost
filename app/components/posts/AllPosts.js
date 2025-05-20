@@ -5,11 +5,11 @@ import { capitalizeText } from "@/utils/capitalizeText";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-const AllPosts = ({ postsPerPage }) => {
+const AllPosts = ({ postsPerPage, blogs }) => {
   const filterParams = useSearchParams();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [allFetchedPosts, setAllFetchedPosts] = useState([]);
+  const [allFetchedPosts, setAllFetchedPosts] = useState(blogs || []);
   const [posts, setPosts] = useState([]);
   const [totalFilteredPosts, setTotalFilteredPosts] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -57,27 +57,6 @@ const AllPosts = ({ postsPerPage }) => {
     },
     [allFetchedPosts, postsPerPage]
   );
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      setLoading(true);
-      try {
-        const resPosts = await fetch(
-          `https://dashboard-blog.vercel.app/api/blogPost`,
-          {
-            cache: "no-store",
-          }
-        );
-        const data = await resPosts.json();
-        console.log("Fetched posts:", data);
-        setAllFetchedPosts(data.blogs);
-      } catch (error) {
-        console.error("Failed to fetch posts:", error);
-        setAllFetchedPosts([]);
-      }
-    };
-    fetchPosts();
-  }, []);
 
   useEffect(() => {
     const filter = filterParams.get("filter") || "latest";

@@ -11,6 +11,9 @@ import { useEffect, useState } from "react";
 const Search = ({ searchOpen, toggleSearch }) => {
   // get current url params
   const [pagePathname, setPagePathname] = useState("");
+  // search results
+  const [searchTerm, setSearchTerm] = useState("");
+
   useEffect(() => {
     setPagePathname(window.location.pathname);
   }, [setPagePathname]);
@@ -49,8 +52,6 @@ const Search = ({ searchOpen, toggleSearch }) => {
       }, 250)
     : null;
 
-  // search results
-  const [searchTerm, setSearchTerm] = useState("");
   const searchResults = posts.filter((searchResult) => {
     let { title, description, author, category } = searchResult.frontmatter;
 

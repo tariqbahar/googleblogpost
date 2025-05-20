@@ -105,7 +105,7 @@ const Home = async () => {
                   {/* Hover Image BELOW the box but visually above */}
                   <div className="absolute top-full mt-3 w-[192px] h-[120px] z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out shadow-md rounded overflow-hidden">
                     <img
-                      src={category.image || "/placeholder.jpg"}
+                      src={category.image.url || "/placeholder.jpg"}
                       alt={category.name}
                       className="w-full h-full object-cover"
                     />

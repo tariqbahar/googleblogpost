@@ -33,7 +33,7 @@ export async function generateMetadata({ params }) {
     title,
     description,
     openGraph: {
-      images: [{ url: image }],
+      images: [{ url: image.url }],
     },
   };
 }
@@ -120,7 +120,7 @@ const BlogDetails = async ({ params }) => {
                 <Image
                   className="rounded-xl object-cover bg-dark/10"
                   fill
-                  src={image}
+                  src={image.url}
                   alt={title}
                   sizes="(max-width: 768px) 400px, (max-width: 1200px) 500px, 700px"
                 />

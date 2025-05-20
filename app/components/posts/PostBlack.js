@@ -28,7 +28,7 @@ const PostBlack = ({ post, color, style }) => {
         </span>
         <Image
           className="rounded-xl md:rounded-2xl h-[360px] w-full object-cover bg-white/10"
-          src={image}
+          src={image.url}
           height={500}
           width={742}
           alt={title}

@@ -62,7 +62,7 @@ const PostTwo = ({ post }) => {
         </span>
         <Image
           className="rounded-xl md:rounded-2xl w-full max-h-96 aspect-[9/12] object-cover bg-white/40"
-          src={image}
+          src={image.url}
           height={675}
           width={580}
           alt={title}

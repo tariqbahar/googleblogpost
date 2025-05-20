@@ -31,7 +31,7 @@ const PostThree = ({ post, imageHeight }) => {
           className={`rounded-xl md:rounded-2xl w-full object-cover bg-white/40 ${
             imageHeight ? "h-80" : "aspect-[9/10] lg:aspect-[9/12]"
           }`}
-          src={image}
+          src={image.url}
           height={660}
           width={520}
           alt={title}

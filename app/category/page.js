@@ -50,7 +50,7 @@ const AllCategory = async () => {
                 >
                   <div className="relative overflow-clip rounded-md">
                     <Image
-                      src={category.image}
+                      src={category.image.url}
                       alt={category.name}
                       height={200}
                       width={200}

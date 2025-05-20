@@ -32,7 +32,7 @@ export async function generateMetadata({ params }) {
     title: name.charAt(0).toUpperCase() + name.slice(1),
     description: `All ${name} posts`,
     openGraph: {
-      images: [{ url: image }],
+      images: [{ url: image.url }],
     },
   };
 }

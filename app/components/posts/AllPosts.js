@@ -62,10 +62,13 @@ const AllPosts = ({ postsPerPage }) => {
     const fetchPosts = async () => {
       setLoading(true);
       try {
-        const res = await fetch(
-          "https://dashboard-blog.vercel.app/api/blogPost"
+        const resPosts = await fetch(
+          `https://dashboard-blog.vercel.app/api/blogPost`,
+          {
+            cache: "no-store",
+          }
         );
-        const data = await res.json();
+        const data = await resPosts.json();
         console.log("Fetched posts:", data);
         setAllFetchedPosts(data.blogs);
       } catch (error) {

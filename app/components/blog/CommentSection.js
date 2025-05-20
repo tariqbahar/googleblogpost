@@ -1,11 +1,9 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import ConfirmDialog from "../ConfirmDialog";
 import Comment from "./Comment";
 import axios from "axios";
 // import { useSession } from "next-auth/react";
-
 export default function CommentSection({ blog }) {
   const [comments, setComments] = useState([]);
   const [message, setMessage] = useState("");

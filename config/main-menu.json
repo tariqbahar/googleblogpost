@@ -11,7 +11,7 @@
     "name": "Blog Posts",
     "link": "/blog"
   },
- 
+
   {
     "name": "Archive",
     "link": "/archive"
@@ -19,7 +19,6 @@
   {
     "name": "Pages",
     "submenu": [
-      
       {
         "name": "All Authors",
         "link": "/author"
@@ -49,5 +48,9 @@
   {
     "name": "Contact",
     "link": "/contact"
+  },
+  {
+    "name": "Sign In",
+    "link": "/auth?callbackUrl=http%3A%2F%2Flocalhost%3A3000%2F"
   }
 ]

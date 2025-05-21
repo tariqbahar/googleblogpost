@@ -35,8 +35,8 @@ export default function ProfilePage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-white py-16 px-6 flex items-center justify-center">
-        <div className="w-full max-w-3xl bg-white rounded-3xl shadow-xl border border-gray-200 p-8 md:p-12 transition-all duration-300">
+      <div className="min-h-screen bg-[#e7e6d4] py-16 px-6 flex items-center justify-center">
+        <div className="w-full max-w-3xl bg-[#efefed] rounded-3xl shadow-xl border border-gray-200 p-8 md:p-12 transition-all duration-300">
           {/* Header */}
           <div className="flex flex-col items-center text-center">
             {user?.image ? (

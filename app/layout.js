@@ -2,11 +2,9 @@ import DeviceSizeIndicator from "@/components/essential/DeviceSizeIndicator";
 import { fontLexendDeca, fontPrata } from "@/components/essential/Fonts";
 import config from "@/config/site.config.json";
 import NextTopLoader from "nextjs-toploader";
+import SessionWrapper from "@/components/SessionWrapper"; // 👈 Import it here
 
-// Font Awesome CSS import 👇
-import '@fortawesome/fontawesome-free/css/all.min.css';
-
-
+import "@fortawesome/fontawesome-free/css/all.min.css";
 import "@/styles/styles.scss";
 
 export const metadata = {
@@ -15,11 +13,9 @@ export const metadata = {
   url: config.siteURL,
   siteName: config.metaData.title,
   type: "website",
-
   icons: {
     icon: "/images/favicon.png",
   },
-
   metadataBase: new URL("https://googleblogpost.vercel.app"),
   alternates: {
     canonical: "/",
@@ -44,7 +40,7 @@ export default function RootLayout({ children }) {
           height={2}
         />
         <DeviceSizeIndicator />
-        {children}
+        <SessionWrapper>{children}</SessionWrapper>
       </body>
     </html>
   );

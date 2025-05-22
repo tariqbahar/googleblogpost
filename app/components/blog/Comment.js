@@ -76,7 +76,7 @@ function Comment({
                   <textarea
                     ref={editInputRef}
                     rows={3}
-                    className="w-full p-2 border text-white border-blue-400 rounded-md text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-2 border text-white bg-slate-800 rounded-md text-sm resize-none focus:outline-none focus:ring-2 focus:ring-slate-700"
                     value={editText}
                     onChange={(e) => setEditText(e.target.value)}
                   />
@@ -158,7 +158,7 @@ function Comment({
                 <textarea
                   ref={replyInputRef}
                   rows={3}
-                  className="w-full border bg-slate-300 text-white border-gray-300 rounded-md p-2 text-sm resize-none "
+                  className="w-full border bg-slate-800 text-white border-gray-300 rounded-md p-2 text-sm resize-none "
                   placeholder="Write your reply..."
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
@@ -169,7 +169,7 @@ function Comment({
                     setReplyText("");
                     setReplyingTo(null);
                   }}
-                  className="self-start bg-primary text-white px-4 py-1.5 rounded-md hover:bg-primary/90 transition text-sm"
+                  className="self-start bg-blue-600 text-white px-4 py-1.5 rounded-md hover:bg-blue-700 transition text-sm"
                 >
                   Reply
                 </button>

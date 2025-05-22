@@ -1,11 +1,13 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, startTransition } from "react";
 import ConfirmDialog from "../ConfirmDialog";
 import Comment from "./Comment";
 import axios from "axios";
 // import { useSession } from "next-auth/react";
 export default function CommentSection({ blog }) {
   const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(true); // Add this
+
   const [message, setMessage] = useState("");
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState("");
@@ -24,14 +26,18 @@ export default function CommentSection({ blog }) {
   // const user = data?.user;
   // const userId = user?.id;
 
-  const fetchComments = async () => {
+  const fetchComments = async (showLoader = true) => {
+    if (showLoader) setLoading(true); // Only show loading if not optimistic
+
     try {
       const res = await axios.get(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blogPost/${blog._id}/comments`
       );
-      setComments(res.data);
-    } catch (err) {
-      console.error("Error fetching comments", err);
+      setComments(res.data || []);
+    } catch (error) {
+      console.error("Error fetching comments", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,7 +47,23 @@ export default function CommentSection({ blog }) {
 
   const postComment = async () => {
     if (!message.trim()) return;
-    setIsPosting(true);
+    const tempId = Date.now().toString(); // temporary ID
+    const newComment = {
+      _id: tempId, // temporary until backend assigns real ID
+      message,
+      userId,
+      user,
+      replies: [],
+      likes: [],
+      createdAt: new Date().toISOString(),
+    };
+
+    // Optimistically update UI
+    startTransition(() => {
+      setComments((prev) => [...prev, newComment]);
+      setMessage("");
+    });
+
     try {
       await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blogPost/${blog._id}/comments`,
@@ -51,17 +73,44 @@ export default function CommentSection({ blog }) {
           message,
         }
       );
-      await fetchComments(); // Ensures fresh data and structure
-      setMessage("");
+      // Refresh the comments from server to get real IDs
+      await fetchComments(false); // Don't show loading after optimistic update
     } catch (err) {
       console.error("Error posting comment", err);
-    } finally {
-      setIsPosting(false);
+      // Optionally: roll back optimistic update if it fails
+      setComments((prev) => prev.filter((c) => c._id !== tempId));
     }
   };
 
   const postReply = async (parentId, text) => {
     if (!text.trim()) return;
+
+    const tempId = Date.now().toString();
+    const newReply = {
+      _id: tempId,
+      message: text,
+      userId,
+      user,
+      createdAt: new Date().toISOString(),
+      likes: [],
+    };
+
+    // Optimistic UI update
+    startTransition(() => {
+      setComments((prevComments) =>
+        prevComments.map((comment) =>
+          comment._id === parentId
+            ? {
+                ...comment,
+                replies: [...(comment.replies || []), newReply],
+              }
+            : comment
+        )
+      );
+      setReplyText("");
+      setReplyingTo(null);
+    });
+
     setIsReplying(true);
     try {
       await axios.post(
@@ -72,9 +121,7 @@ export default function CommentSection({ blog }) {
           message: text,
         }
       );
-      await fetchComments();
-      setReplyText("");
-      setReplyingTo(null);
+      await fetchComments(false); // Sync real data
     } catch (err) {
       console.error("Error posting reply", err);
     } finally {
@@ -83,6 +130,17 @@ export default function CommentSection({ blog }) {
   };
 
   const editComment = async (id, newText) => {
+    // Optimistic UI
+    startTransition(() => {
+      setComments((prev) =>
+        prev.map((comment) =>
+          comment._id === id ? { ...comment, message: newText } : comment
+        )
+      );
+      setEditingCommentId(null);
+      setEditText("");
+    });
+
     try {
       await axios.put(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blogPost/${blog._id}/comments/${id}`,
@@ -90,42 +148,79 @@ export default function CommentSection({ blog }) {
           message: newText,
         }
       );
-      await fetchComments();
-      setEditingCommentId(null);
-      setEditText("");
+      fetchComments(false); // Sync with backend
     } catch (err) {
       console.error("Error editing comment", err);
     }
   };
+
   const editReply = async (parentId, replyId, newText) => {
+    startTransition(() => {
+      setComments((prevComments) =>
+        prevComments.map((comment) => {
+          if (comment._id === parentId) {
+            const updatedReplies = comment.replies.map((reply) =>
+              reply._id === replyId ? { ...reply, message: newText } : reply
+            );
+            return { ...comment, replies: updatedReplies };
+          }
+          return comment;
+        })
+      );
+      setEditingCommentId(null);
+      setEditText("");
+    });
+
     try {
       await axios.put(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blogPost/${blog._id}/comments/${parentId}/replies/${replyId}`,
         { message: newText }
       );
-      await fetchComments();
-      setEditingCommentId(null);
-      setEditText("");
+      fetchComments(false);
     } catch (err) {
       console.error("Error editing reply", err);
     }
   };
 
   const toggleLike = async (id) => {
+    // Optimistic toggle
+    startTransition(() => {
+      setComments((prevComments) =>
+        prevComments.map((comment) => {
+          if (comment._id === id) {
+            const hasLiked = comment.likes.includes(userId);
+            const newLikes = hasLiked
+              ? comment.likes.filter((uid) => uid !== userId)
+              : [...comment.likes, userId];
+            return { ...comment, likes: newLikes };
+          }
+
+          if (comment.replies?.length) {
+            const updatedReplies = comment.replies.map((reply) => {
+              if (reply._id === id) {
+                const hasLiked = reply.likes.includes(userId);
+                const newLikes = hasLiked
+                  ? reply.likes.filter((uid) => uid !== userId)
+                  : [...reply.likes, userId];
+                return { ...reply, likes: newLikes };
+              }
+              return reply;
+            });
+            return { ...comment, replies: updatedReplies };
+          }
+
+          return comment;
+        })
+      );
+    });
+
     try {
-      const res = await axios.post(
+      await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blogPost/${blog._id}/comments/${id}`
       );
-      const updateLikes = (items) =>
-        items.map((item) => {
-          if (item.id === id) return { ...item, ...res.data };
-          else if (item.replies?.length)
-            return { ...item, replies: updateLikes(item.replies) };
-          return item;
-        });
-      setComments(updateLikes(comments));
+      fetchComments(false); // Sync
     } catch (err) {
-      console.error("Error liking comment", err);
+      console.error("Error toggling like", err);
     }
   };
 
@@ -137,6 +232,31 @@ export default function CommentSection({ blog }) {
   };
 
   const handleDeleteConfirm = async () => {
+    // Optimistic UI update
+    startTransition(() => {
+      setComments((prevComments) => {
+        if (deleteLevel === 0) {
+          // Optimistically remove the main comment
+          return prevComments.filter(
+            (comment) => comment._id !== commentIdToDelete
+          );
+        } else {
+          // Optimistically remove the reply
+          return prevComments.map((comment) => {
+            if (comment._id === parentIdToDelete) {
+              return {
+                ...comment,
+                replies: (comment.replies || []).filter(
+                  (reply) => reply._id !== commentIdToDelete
+                ),
+              };
+            }
+            return comment;
+          });
+        }
+      });
+    });
+
     try {
       if (deleteLevel === 0) {
         // Main comment
@@ -149,7 +269,8 @@ export default function CommentSection({ blog }) {
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blogPost/${blog._id}/comments/${parentIdToDelete}/replies/${commentIdToDelete}`
         );
       }
-      await fetchComments();
+
+      await fetchComments(false); // Sync real data from backend
     } catch (err) {
       console.error("Error deleting comment or reply", err);
     } finally {
@@ -183,7 +304,9 @@ export default function CommentSection({ blog }) {
       </div>
 
       {/* Render comments and replies */}
-      {comments.length > 0 && (
+      {loading ? (
+        <p className="text-gray-500 text-sm">Loading comments...</p>
+      ) : comments.length > 0 ? (
         <div className="bg-white border rounded-lg p-4 shadow-sm space-y-4">
           {comments.map((comment) => (
             <Comment
@@ -202,12 +325,14 @@ export default function CommentSection({ blog }) {
               editingCommentId={editingCommentId}
               setEditingCommentId={setEditingCommentId}
               editText={editText}
-              onEditReply={editReply} // ✅ Pass this
+              onEditReply={editReply}
               setEditText={setEditText}
               level={0}
             />
           ))}
         </div>
+      ) : (
+        <p className="text-gray-500 text-sm">No comments yet.</p>
       )}
 
       {/* Confirm Dialog */}

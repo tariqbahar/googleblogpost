@@ -1,58 +1,60 @@
 // app/api/auth/[...nextauth]/route.js
-import NextAuth from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
-import GitHubProvider from 'next-auth/providers/github';
-import FacebookProvider from 'next-auth/providers/facebook';
-import CredentialsProvider from 'next-auth/providers/credentials';
+import NextAuth from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
+import GitHubProvider from "next-auth/providers/github";
+import FacebookProvider from "next-auth/providers/facebook";
+import CredentialsProvider from "next-auth/providers/credentials";
 
-import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
-import clientPromise from '@/libs/mongoClient'; // for NextAuth adapter
-import connectDB from '@/libs/mongodb';         // for mongoose connection
-import User from '@/models/User';               // your mongoose User model
+import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
+import clientPromise from "@/libs/mongoClient"; // for NextAuth adapter
+import connectDB from "@/libs/mongodb"; // for mongoose connection
+import User from "@/models/User"; // your mongoose User model
 
 export const authOptions = {
   adapter: MongoDBAdapter(clientPromise),
 
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
 
   secret: process.env.NEXTAUTH_SECRET,
 
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
+      name: "Credentials",
       credentials: {
-        email: { label: 'Email', type: 'text' },
-        password: { label: 'Password', type: 'password' },
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log('🔑 Credentials login attempt');
+        console.log("🔑 Credentials login attempt");
 
         await connectDB();
         const email = credentials.email?.toLowerCase().trim();
         const password = credentials.password;
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).select("+password");
 
         if (!user) {
-          console.log('❌ No user found for email:', email);
-          throw new Error('Invalid email or password');
+          console.log("❌ No user found for email:", email);
+          throw new Error("Invalid email or password");
         }
 
         if (!user.password) {
-          console.log('❌ User exists but has no password (maybe social login)');
-          throw new Error('Please log in with your social account');
+          console.log(
+            "❌ User exists but has no password (maybe social login)"
+          );
+          throw new Error("Please log in with your social account");
         }
 
         const isValid = await user.comparePassword(password);
-        console.log('🔐 Password match:', isValid);
+        console.log("🔐 Password match:", isValid);
 
         if (!isValid) {
-          throw new Error('Invalid email or password');
+          throw new Error("Invalid email or password");
         }
 
-        console.log('✅ Auth success for:', user.email);
+        console.log("✅ Auth success for:", user.email);
 
         return {
           id: user._id.toString(),
@@ -79,7 +81,7 @@ export const authOptions = {
   ],
 
   pages: {
-    signIn: '/auth', // your custom login/register component page
+    signIn: "/auth", // your custom login/register component page
   },
 
   callbacks: {

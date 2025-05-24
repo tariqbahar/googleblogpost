@@ -13,8 +13,6 @@ const Search = ({ searchOpen, toggleSearch }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useState([]);
-  console.log(posts);
-
   // Set current pathname
   useEffect(() => {
     setPagePathname(window.location.pathname);

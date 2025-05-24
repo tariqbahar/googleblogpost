@@ -1,61 +1,71 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
+import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
-const userSchema = new mongoose.Schema({
-  // Existing fields from old schema
-  email: { 
-    type: String, 
-    unique: true,
-    required: [true, 'Please enter your email'],
-    lowercase: true,
-    trim: true,
-    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
+const userSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      unique: true,
+      required: [true, "Email is required"],
+      lowercase: true,
+      trim: true,
+      match: [
+        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+        "Enter valid email",
+      ],
+    },
+    password: {
+      type: String,
+      minlength: 6,
+      select: false,
+    },
+    provider: {
+      type: String,
+      default: "credentials",
+      enum: ["credentials", "google", "facebook", "github"],
+    },
+    googleId: String,
+    facebookId: String,
+    githubId: String,
+    name: {
+      type: String,
+      trim: true,
+    },
+    phone: {
+      type: String,
+      trim: true,
+    },
+    image: {
+      url: { type: String, default: "" },
+      public_id: { type: String, default: "" },
+    },
+    userName: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
+    phoneVerified: {
+      type: Boolean,
+      default: false,
+    },
+    lastLogin: Date,
+    resetToken: String,
+    resetExpiry: Date,
   },
-  password: {
-    type: String,
-    minlength: [6, 'Minimum password length is 6 characters']
-  },
-  provider: { 
-    type: String, 
-    default: 'credentials',
-    enum: ['credentials', 'google', 'facebook', 'github']
-  },
-  facebookId: String,
-  googleId: String,
-  githubId: String,
-  resetToken: String,
-  resetExpiry: Date,
-  // verified: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now },
-
-  // New fields for enhanced registration
-  name: {
-    type: String,
-    trim: true
-  },
-  phone: {
-    type: String,
-    trim: true
-  },
-  phoneVerified: {
-    type: Boolean,
-    default: false
-  },
-  role: {
-    type: String,
-    enum: ['user', 'admin'],
-    default: 'user'
-  },
-  lastLogin: Date,
-
-}, {
-  timestamps: true // Adds createdAt and updatedAt automatically
-});
+  {
+    timestamps: true,
+  }
+);
 
 // Password hashing middleware (updated)
-userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-  
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
@@ -66,25 +76,29 @@ userSchema.pre('save', async function(next) {
 });
 
 // Password comparison method
-userSchema.methods.comparePassword = async function(candidatePassword) {
+userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
 // Method to check if profile is complete
-userSchema.methods.isProfileComplete = function() {
-  return this.name && this.email && (this.provider !== 'credentials' || this.password);
+userSchema.methods.isProfileComplete = function () {
+  return (
+    this.name &&
+    this.email &&
+    (this.provider !== "credentials" || this.password)
+  );
 };
 
 // Static method for finding or creating OAuth users
-userSchema.statics.findOrCreate = async function(provider, profile) {
+userSchema.statics.findOrCreate = async function (provider, profile) {
   let user;
   const query = { [`${provider}Id`]: profile.id };
-  
+
   user = await this.findOne(query);
-  
+
   if (!user) {
     user = await this.findOne({ email: profile.email });
-    
+
     if (user) {
       // Link existing account with OAuth provider
       user[`${provider}Id`] = profile.id;
@@ -97,12 +111,12 @@ userSchema.statics.findOrCreate = async function(provider, profile) {
         email: profile.email,
         provider,
         [`${provider}Id`]: profile.id,
-        verified: true
+        verified: true,
       });
     }
   }
-  
+
   return user;
 };
 
-export default mongoose.models.User || mongoose.model('User', userSchema);
+export default mongoose.models.User || mongoose.model("User", userSchema);

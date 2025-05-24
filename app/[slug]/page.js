@@ -17,6 +17,7 @@ import { notFound } from "next/navigation";
 import LikeButton from "../components/blog/LikeButton";
 import CommentSection from "../components/blog/CommentSection";
 import Views from "../components/blog/Views";
+import BlogPostViewTracker from "../components/blog/BlogPostViewTracker";
 
 export async function generateMetadata({ params }) {
   const res = await fetch(`https://dashboard-blog.vercel.app/api/blogPost`, {
@@ -84,7 +85,7 @@ const BlogDetails = async ({ params }) => {
 
                 <p>{formatDate(date)}</p>
                 <div className=" flex justify-between">
-                  <Views />
+                  <Views views={currentPost.views} />
                   <LikeButton />
                 </div>
               </div>
@@ -171,6 +172,9 @@ const BlogDetails = async ({ params }) => {
               <div className="block lg:hidden mt-14 [&_p]:!text-start [&_ul]:!justify-start [&_hr]:!ml-0">
                 <SharePost title={title} slug={slug} />
               </div>
+              {currentPost._id && (
+                <BlogPostViewTracker blogId={currentPost._id} />
+              )}
               <div className="mt-8 space-y-8">
                 <CommentSection blog={currentPost} />
               </div>

@@ -1,3 +1,4 @@
+// Comment.jsx
 import React, { useRef, useEffect } from "react";
 
 function Comment({
@@ -17,9 +18,16 @@ function Comment({
   setEditText,
   level = 0,
   parentId = null,
+  currentUser, // Received from CommentSection
+  currentUserId, // Received from CommentSection
 }) {
   const isReplying = replyingTo === comment._id;
   const isEditing = editingCommentId === comment._id;
+
+  // Determine if the current user is the author of this comment/reply
+  const isAuthor = currentUserId === comment.userId;
+  // Determine if the current user has liked this comment/reply
+  // const hasLikedByUser = comment?.likes?.includes(currentUserId);
 
   const replyInputRef = useRef(null);
   const editInputRef = useRef(null);
@@ -40,13 +48,13 @@ function Comment({
       return ts;
     }
   };
-
   // fallback avatar (can be replaced with actual image URLs)
   const avatarUrl =
-    comment.avatar ||
+    comment.user?.imageUrl || // Use comment.user.imageUrl if available
     `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      comment.name
+      comment.user?.name || comment.user?.userName || "Guest" // Prioritize name, then userName, then Guest
     )}&background=random`;
+  console.log(comment);
 
   return (
     <div className={`mt-4 ${level > 0 ? "ml-6" : ""}`}>
@@ -54,17 +62,23 @@ function Comment({
         <div className="flex items-start gap-3">
           <img
             src={avatarUrl}
-            alt={comment.name}
+            alt={comment.user?.name || comment.user?.userName || "User Avatar"} // Alt text
             className="w-10 h-10 rounded-full object-cover border"
           />
           <div className="flex-1">
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-sm font-semibold text-gray-800">
-                  {comment.name}
+                  {comment.user?.name || comment.user?.userName || "Anonymous"}{" "}
+                  {/* Display name or userName */}
+                  {comment.user?.role === "admin" && ( // Optional: Display admin badge
+                    <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                      Admin
+                    </span>
+                  )}
                 </p>
                 <span className="text-xs text-gray-500">
-                  {formatTimestamp(comment.timestamp)}
+                  {formatTimestamp(comment.timestamp)} {/* Use createdAt */}
                 </span>
               </div>
             </div>
@@ -76,7 +90,7 @@ function Comment({
                   <textarea
                     ref={editInputRef}
                     rows={3}
-                    className="w-full p-2 border text-white bg-slate-800 rounded-md text-sm resize-none focus:outline-none focus:ring-2 focus:ring-slate-700"
+                    className="w-full p-2 border text-black bg-white rounded-md text-sm resize-none focus:outline-none focus:ring-2 focus:ring-slate-700"
                     value={editText}
                     onChange={(e) => setEditText(e.target.value)}
                   />
@@ -89,9 +103,10 @@ function Comment({
                         } else {
                           onEditReply(parentId, comment._id, editText);
                         }
-                        setEditingCommentId(null);
-                        setEditText("");
+                        // setEditingCommentId(null); // Managed by onEdit/onEditReply
+                        // setEditText(""); // Managed by onEdit/onEditReply
                       }}
+                      disabled={!editText.trim()} // Disable save if empty
                     >
                       Save
                     </button>
@@ -116,7 +131,8 @@ function Comment({
             {/* Action buttons */}
             {!isEditing && (
               <div className="flex flex-wrap items-center gap-4 mt-3 text-sm">
-                {level === 0 && (
+                {currentUserId && level === 0 && (
+                  // Only show reply if logged in and it's a top-level comment
                   <button
                     onClick={() =>
                       setReplyingTo(isReplying ? null : comment._id)
@@ -126,55 +142,66 @@ function Comment({
                     {isReplying ? "Cancel" : "Reply"}
                   </button>
                 )}
-                <button
-                  onClick={() => {
-                    setEditingCommentId(comment._id);
-                    setEditText(comment.message);
-                  }}
-                  className="text-gray-600 hover:underline"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => onDeleteRequest(comment._id, level)}
-                  className="text-red-500 hover:underline"
-                >
-                  Delete
-                </button>
-                <button
-                  onClick={() => onLike(comment._id)}
-                  className={`flex items-center gap-1 font-semibold ${
-                    comment.likedByUser ? "text-red-500" : "text-gray-400"
-                  } hover:underline`}
-                >
-                  ♥ {comment.likes > 0 ? comment.likes : ""}
-                </button>
+                {isAuthor && (
+                  // Only show edit if the current user is the author
+                  <button
+                    onClick={() => {
+                      setEditingCommentId(comment._id);
+                      setEditText(comment.message);
+                    }}
+                    className="text-gray-600 hover:underline"
+                  >
+                    Edit
+                  </button>
+                )}
+                {isAuthor && (
+                  // Only show delete if the current user is the author
+                  <button
+                    onClick={() => onDeleteRequest(comment._id, level)}
+                    className="text-red-500 hover:underline"
+                  >
+                    Delete
+                  </button>
+                )}
+                {currentUserId && (
+                  // Only show like if logged in
+                  <button
+                    // onClick={() => onLike(comment._id)}
+                    className={`flex items-center gap-1 font-semibold 
+                      // hasLikedByUser ? "text-red-500" : "text-gray-400"
+                     hover:underline`}
+                  >
+                    ♥ {comment.likes?.length > 0 ? comment.likes.length : ""}
+                  </button>
+                )}
               </div>
             )}
 
             {/* Reply box */}
-            {isReplying && (
-              <div className="mt-4 flex flex-col gap-2">
-                <textarea
-                  ref={replyInputRef}
-                  rows={3}
-                  className="w-full border bg-slate-800 text-white border-gray-300 rounded-md p-2 text-sm resize-none "
-                  placeholder="Write your reply..."
-                  value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                />
-                <button
-                  onClick={() => {
-                    onReply(comment._id, replyText);
-                    setReplyText("");
-                    setReplyingTo(null);
-                  }}
-                  className="self-start bg-blue-600 text-white px-4 py-1.5 rounded-md hover:bg-blue-700 transition text-sm"
-                >
-                  Reply
-                </button>
-              </div>
-            )}
+            {isReplying &&
+              currentUserId && ( // Only show reply box if logged in
+                <div className="mt-4 flex flex-col gap-2">
+                  <textarea
+                    ref={replyInputRef}
+                    rows={3}
+                    className="w-full border bg-white text-black border-gray-300 rounded-md p-2 text-sm resize-none"
+                    placeholder="Write your reply..."
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                  />
+                  <button
+                    onClick={() => {
+                      onReply(comment._id, replyText);
+                      // setReplyText(""); // Managed by onReply
+                      // setReplyingTo(null); // Managed by onReply
+                    }}
+                    className="self-start bg-blue-600 text-white px-4 py-1.5 rounded-md hover:bg-blue-700 transition text-sm"
+                    disabled={!replyText.trim()} // Disable reply button if empty
+                  >
+                    Reply
+                  </button>
+                </div>
+              )}
           </div>
         </div>
       </div>
@@ -201,6 +228,8 @@ function Comment({
               setEditText={setEditText}
               level={level + 1}
               parentId={comment._id}
+              currentUser={currentUser}
+              currentUserId={currentUserId}
             />
           ))}
         </div>

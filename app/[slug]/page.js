@@ -51,7 +51,6 @@ const BlogDetails = async ({ params }) => {
   // const currentPost = await resPosts.json();
   const slug = params.slug;
   const currentPost = allPosts.find((post) => post.slug === slug);
-  console.log(currentPost);
 
   if (!currentPost) {
     return notFound();

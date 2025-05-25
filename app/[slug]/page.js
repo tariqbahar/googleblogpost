@@ -86,7 +86,11 @@ const BlogDetails = async ({ params }) => {
                 <p>{formatDate(date)}</p>
                 <div className=" flex justify-between">
                   <Views views={currentPost.views} />
-                  <LikeButton />
+                  <LikeButton
+                    blogId={currentPost._id}
+                    likes={currentPost.likes}
+                    likedBy={currentPost.likedBy}
+                  />
                 </div>
               </div>
 

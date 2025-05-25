@@ -54,8 +54,6 @@ function Comment({
     `https://ui-avatars.com/api/?name=${encodeURIComponent(
       comment.user?.name || comment.user?.userName || "Guest" // Prioritize name, then userName, then Guest
     )}&background=random`;
-  console.log(comment);
-
   return (
     <div className={`mt-4 ${level > 0 ? "ml-6" : ""}`}>
       <div className="p-4 bg-white border border-gray-200 rounded-xl shadow-sm">
